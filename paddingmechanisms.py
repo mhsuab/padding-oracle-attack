@@ -1,3 +1,11 @@
+class InvalidPlaintext(Exception):
+    def __init__(self, plaintext):
+        self.plaintext = plaintext
+        super().__init__()
+    
+    def __str__(self):
+        return f'Receive invalid plaintext, {self.plaintext}'
+
 class PaddingMechanisms():
     subclasses = {}
     def __init__(self, BS):
@@ -13,7 +21,7 @@ class PaddingMechanisms():
     @classmethod
     def create(cls, message_type, BS):
         if message_type not in cls.subclasses:
-            raise ValueError('Currently not support Padding Mechanism, {}.'.format(message_type))
+            raise ValueError(f'Please make sure {message_type} to be correct and is implemented.')
         return cls.subclasses[message_type](BS)
 
 @PaddingMechanisms.register_subclass('ISO_7816_4')
@@ -26,8 +34,8 @@ class ISO_7816_4(PaddingMechanisms):
             if pt[i : i + 1] == b'\x80':
                 return pt[:i]
             elif pt[i : i + 1] != b'\x00':
-                raise ValueError('Plaintext, {}, seems to be unvalid.'.format(pt))
-        raise ValueError('Plaintext, {}, seems to be unvalid.'.format(pt))
+                raise InvalidPlaintext(pt)
+        raise InvalidPlaintext(pt)
     
     def end(self, padlen):
         return b'\x80'
