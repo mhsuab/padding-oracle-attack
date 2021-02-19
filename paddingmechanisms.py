@@ -50,3 +50,14 @@ class PKCS(PaddingMechanisms):
     
     def end(self, padlen):
         return bytes([padlen + 1])
+
+@PaddingMechanisms.register_subclass('ZERO')
+class PKCS(PaddingMechanisms):
+    def pad(self, padlen):
+        return padlen * bytes([0])
+
+    def unpad(self, pt):
+        pass
+    
+    def end(self, padlen):
+        return bytes([0])
